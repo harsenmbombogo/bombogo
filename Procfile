@@ -1,2 +1,2 @@
-web: gunicorn bombogo.wsgi --log-file -
+web: gunicorn bombogo.wsgi
 gunicorn --log-file=- bombogo:app
