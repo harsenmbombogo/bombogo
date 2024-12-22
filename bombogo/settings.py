@@ -23,7 +23,13 @@ DEBUG = config('DEBUG', default=True, cast=bool)
 
 ALLOWED_HOSTS = config('DJANGO_ALLOWED_HOSTS', default='localhost').split(',')
 
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://bombogo-production.up.railway.app'
+]
+
 # Configurações de segurança (apenas para produção)
+# SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SECURE_SSL_REDIRECT = not DEBUG
 CSRF_COOKIE_SECURE = not DEBUG
 SESSION_COOKIE_SECURE = not DEBUG
@@ -44,9 +50,12 @@ INSTALLED_APPS = [
     'channels',
     'django_celery_beat',
     'fcm_django',
+    
     # 'django-filter'
     # 'corsheaders',
 ]
+
+# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 class CustomFirebaseCredentials(credentials.ApplicationDefault):
     def __init__(self, account_file_path: str):
@@ -92,10 +101,6 @@ CHANNEL_LAYERS = {
     },
 }
 
-# CORS_ALLOWED_ORIGINS = [
-#     "http://localhost:3000",  # Substitua pelo seu front-end se necessário
-# ]
-
 
 # Configurações do Celery
 CELERY_BROKER_URL = 'redis://localhost:6379/0'  # ou qualquer outro broker que você esteja usando
@@ -106,14 +111,6 @@ CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers.DatabaseScheduler'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 
-
-
-
-# Configuracacoes do twilio para verificacao do numero 
-
-TWILIO_ACCOUNT_SID = 'USa88c283a83ce0a6c4fa9d749bb5d8e1b'
-TWILIO_AUTH_TOKEN = 'e6dad094bd4d2e8a7b2dd254cb031b66'
-TWILIO_PHONE_NUMBER = '+13342924420'
 
 
 REST_FRAMEWORK = {
@@ -136,6 +133,7 @@ SIMPLE_JWT = {
 }
 
 MIDDLEWARE = [
+    # 'whitenoise.middleware.WhiteNoiseMiddleware',  # Coloque isso logo após SecurityMiddleware
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -242,7 +240,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Diretórios adicionais para arquivos estáticos
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),  # Local para arquivos estáticos do projeto
+    os.path.join(BASE_DIR, 'app','static'),  # Local para arquivos estáticos do projeto
 ]
 
 
