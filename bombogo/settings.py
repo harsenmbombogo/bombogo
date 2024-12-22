@@ -2,7 +2,8 @@ import dj_database_url
 from pathlib import Path
 import os
 from decouple import config
-
+import pymysql
+pymysql.install_as_MySQLdb()
 from firebase_admin import initialize_app, credentials
 from google.auth import load_credentials_from_file
 
@@ -171,8 +172,7 @@ WSGI_APPLICATION = 'bombogo.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-import pymysql
-pymysql.install_as_MySQLdb()
+
 
 # DATABASES = {
 #     'default': {

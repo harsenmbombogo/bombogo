@@ -23,6 +23,7 @@ router.register(r'perguntas_frequentes_operador', PerguntasFrequentesOperadorVie
 
 
 urlpatterns = [
+    path('', home.index, name='index'),
     path('app_operador/', ConfiguracoesAppOperadorView.as_view(), name='app_operador'),
     path('app_agente/', ConfiguracoesAppAgenteView.as_view(), name='app_agente'),
     path('app_cliente/', ConfiguracoesAppClienteView.as_view(), name='app_cliente'),

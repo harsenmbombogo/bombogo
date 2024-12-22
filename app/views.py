@@ -1,6 +1,7 @@
 from decimal import Decimal
 from django.db.models import Q, Count,Sum,Avg,Max
 from django.forms import ValidationError
+from django.shortcuts import render
 from rest_framework import viewsets, generics
 from rest_framework.response import Response
 from django.contrib.auth import authenticate, logout
@@ -18,8 +19,18 @@ from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.exceptions import NotFound
 import locale
 from django.contrib.auth.password_validation import validate_password
+
+from .twilio_config import *
+
+
 # Definindo a localidade para português do Brasil
-locale.setlocale(locale.LC_TIME, 'pt_PT')  
+import locale
+
+try:
+    locale.setlocale(locale.LC_TIME, 'pt_PT.UTF-8')  # Tente configurar para Português de Portugal
+except locale.Error:
+    locale.setlocale(locale.LC_TIME, 'C')  # Fallback para uma localidade padrão (genérica)
+
 # from .firebase_config import initializeApp
 from fcm_django.models import FCMDevice
 from firebase_admin.messaging import Message, Notification
@@ -56,7 +67,12 @@ def sendMessage(id, title, body, bilhete):
     except Exception as e:
         print("Error", e)
         return False
-        
+    
+class home:
+    def index(request):
+        verification("+258873686545")
+        send_sms()
+        return render(request, "index.html")
 
 class VerificarUserNameView(APIView):
     def post(self, request, *args, **kwargs):
