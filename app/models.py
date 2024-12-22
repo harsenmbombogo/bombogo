@@ -17,9 +17,9 @@ import random
 
 class ConfiguracoesAppCliente(models.Model):
     nome_app=models.CharField(max_length=150, blank=True, null=True, unique=True)
-    descricao_app=models.CharField(max_length=150, blank=True, null=True, unique=True)
-    politica_privacidade_app=models.TextField(blank=True, null=True, unique=True)
-    termos_condicoes_app=models.TextField(blank=True, null=True, unique=True)
+    descricao_app=models.CharField(max_length=150, blank=True, null=True,)
+    politica_privacidade_app=models.TextField(blank=True, null=True)
+    termos_condicoes_app=models.TextField(blank=True, null=True)
     logotipo_app = models.ImageField(upload_to='logotipo_app_cliente/', blank=True, null=True)
     data_cadastro=models.DateTimeField(auto_now=True)
 
@@ -29,9 +29,9 @@ class ConfiguracoesAppCliente(models.Model):
 
 class ConfiguracoesAppOperador(models.Model):
     nome_app=models.CharField(max_length=150, blank=True, null=True, unique=True)
-    descricao_app=models.CharField(max_length=150, blank=True, null=True, unique=True)
-    politica_privacidade_app=models.TextField(blank=True, null=True, unique=True)
-    termos_condicoes_app=models.TextField(blank=True, null=True, unique=True)
+    descricao_app=models.CharField(max_length=150, blank=True, null=True,)
+    politica_privacidade_app=models.TextField(blank=True, null=True, )
+    termos_condicoes_app=models.TextField(blank=True, null=True,)
     logotipo_app = models.ImageField(upload_to='logotipo_app_oerador/', blank=True, null=True)
     data_cadastro=models.DateTimeField(auto_now=True)
 
@@ -41,9 +41,9 @@ class ConfiguracoesAppOperador(models.Model):
 
 class ConfiguracoesAppAgente(models.Model):
     nome_app=models.CharField(max_length=150, blank=True, null=True, unique=True)
-    descricao_app=models.CharField(max_length=150, blank=True, null=True, unique=True)
-    politica_privacidade_app=models.TextField(blank=True, null=True, unique=True)
-    termos_condicoes_app=models.TextField(blank=True, null=True, unique=True)
+    descricao_app=models.CharField(max_length=150, blank=True, null=True, )
+    politica_privacidade_app=models.TextField(blank=True, null=True,)
+    termos_condicoes_app=models.TextField(blank=True, null=True,)
     logotipo_app = models.ImageField(upload_to='logotipo_app_agente/', blank=True, null=True)
     data_cadastro=models.DateTimeField(auto_now=True)
 

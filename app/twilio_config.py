@@ -16,8 +16,21 @@ def verification(to):
         channel="sms", 
         locale="pt"  # Configurando o idioma para português
     )
+    
 
-    print(verification.sid)
+def check_verification(to, code):
+    verification_check = client.verify.v2.services(account_sid).verification_checks.create(
+        to=to,
+        code=code
+    )
+
+    if verification_check.status == "approved":
+        print("Verificação bem-sucedida!")
+        return True
+    else:
+        print("Código inválido ou expirado.")
+        return False
+    
 
 def send_sms():
     message = client.messages.create(
