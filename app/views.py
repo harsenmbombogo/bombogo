@@ -70,9 +70,9 @@ def sendMessage(id, title, body, bilhete):
     
 class home:
     def index(request):
-        verification("+258873686545")
-        code=input("Digite o codigo")
-        check_verification("+258873686545", code)
+        # verification("+258873686545")
+        # code=input("Digite o codigo")
+        # check_verification("+258873686545", code)
         # send_sms()
         return render(request, "index.html")
 
