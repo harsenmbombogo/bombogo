@@ -1,11 +1,221 @@
-<!DOCTYPE html>
-<html lang="pt">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+<html><head><base href="/">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bombogo - Bilhetes Interprovinciais de Moçambique</title>
+
+<style>
+:root {
+  --primary: #07739e;
+  --secondary: #1A1A1A;
+  --light: #F5F5F5;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+body {
+  background-color: var(--light);
+}
+
+.navbar {
+  background: var(--primary);
+  padding: 1rem;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  z-index: 100;
+}
+
+.navbar-brand {
+  color: white;
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.hero {
+  background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
+              url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?ixlib=rb-4.0.3');
+  height: 100vh;
+  background-size: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  text-align: center;
+  padding-top: 80px;
+}
+
+.apps-section {
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.app-cards {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+  margin-top: 2rem;
+}
+
+.app-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  max-width: 300px;
+  transition: transform 0.3s;
+}
+
+.app-card:hover {
+  transform: translateY(-5px);
+}
+
+.qr-code {
+  width: 150px;
+  height: 150px;
+  margin: 1rem auto;
+}
+
+.about-section {
+  background: var(--secondary);
+  color: white;
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.contact-section {
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.footer {
+  background: var(--primary);
+  color: white;
+  padding: 2rem;
+  text-align: center;
+}
+
+.btn {
+  background: var(--primary);
+  color: white;
+  padding: 0.8rem 1.5rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  margin-top: 1rem;
+}
+
+</style>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <h1>Home</h1>
+
+<nav class="navbar">
+  <a href="https://bombogo.co.mz" class="navbar-brand">Bombogo</a>
+</nav>
+
+<section class="hero">
+  <div>
+    <h1>Viaje com Facilidade por Moçambique</h1>
+    <p>Reserve seus bilhetes interprovinciais de forma rápida e segura</p>
+    <a href="#apps" class="btn">Baixe Nossos Aplicativos</a>
+  </div>
+</section>
+
+<section id="apps" class="apps-section">
+  <h2>Nossos Aplicativos</h2>
+  <div class="app-cards">
+    <div class="app-card">
+      <h3>App Cliente</h3>
+      <p>Reserve bilhetes, acompanhe viagens e receba notificações</p>
+      <div class="qr-code">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+          <!-- Simplified QR Code representation -->
+          <rect x="10" y="10" width="80" height="80" fill="none" stroke="black"/>
+          <text x="50" y="50" text-anchor="middle" font-size="8">Scan para App Cliente</text>
+        </svg>
+      </div>
+      <a href="https://play.google.com/store/bombogo-cliente" class="btn">Download</a>
+    </div>
+    
+    <div class="app-card">
+      <h3>App Operador/Agente</h3>
+      <p>Gerencie vendas, controle passageiros e monitore operações</p>
+      <div class="qr-code">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+          <!-- Simplified QR Code representation -->
+          <rect x="10" y="10" width="80" height="80" fill="none" stroke="black"/>
+          <text x="50" y="50" text-anchor="middle" font-size="8">Scan para App Operador</text>
+        </svg>
+      </div>
+      <a href="https://play.google.com/store/bombogo-operador" class="btn">Download</a>
+    </div>
+  </div>
+</section>
+
+<section class="about-section">
+  <h2>Sobre Nós</h2>
+  <p>A Bombogo é a principal plataforma de venda de bilhetes interprovinciais em Moçambique. 
+     Nossa missão é simplificar as viagens terrestres, conectando passageiros a operadores de transporte 
+     de forma eficiente e segura.</p>
+  <p>Cobrimos todas as principais rotas entre as províncias de Moçambique, 
+     oferecendo uma experiência de reserva sem complicações.</p>
+</section>
+
+<section class="contact-section">
+  <h2>Contacte-nos</h2>
+  <p>Email: info@bombogo.co.mz</p>
+  <p>Telefone: +258 84 XXX XXXX</p>
+  <p>Endereço: Av. 24 de Julho, Maputo, Moçambique</p>
+  <div class="social-links">
+    <a href="https://facebook.com/bombogo" class="btn">Facebook</a>
+    <a href="https://instagram.com/bombogo" class="btn">Instagram</a>
+    <a href="https://linkedin.com/company/bombogo" class="btn">LinkedIn</a>
+  </div>
+</section>
+
+<footer class="footer">
+  <p>© 2024 Bombogo. Todos os direitos reservados.</p>
+</footer>
+
+<script>
+// Smooth scrolling for anchor links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        document.querySelector(this.getAttribute('href')).scrollIntoView({
+            behavior: 'smooth'
+        });
+    });
+});
+
+// Animation for app cards on scroll
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.style.opacity = 1;
+            entry.target.style.transform = 'translateY(0)';
+        }
+    });
+}, {
+    threshold: 0.1
+});
+
+document.querySelectorAll('.app-card').forEach(card => {
+    card.style.opacity = 0;
+    card.style.transform = 'translateY(20px)';
+    observer.observe(card);
+});
+</script>
+
 </body>
 </html>

@@ -28,6 +28,7 @@ CSRF_TRUSTED_ORIGINS = [
     'https://bombogo-production.up.railway.app'
 ]
 
+
 # Configurações de segurança (apenas para produção)
 # SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SECURE_SSL_REDIRECT = not DEBUG
