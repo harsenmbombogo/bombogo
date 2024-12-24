@@ -96,23 +96,29 @@ ASGI_APPLICATION = 'bomboapi.asgi.application'
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
-        #"BACKEND": "channels.db.DatabaseChannelLayer",
-
         "CONFIG": {
-            "hosts": [("127.0.0.1", 6379)],
+            "hosts": [
+                "redis://default:klBtTntuxmnTNUKVToYDvADuaBWRjglC@autorack.proxy.rlwy.net:43107"
+            ],
         },
     },
 }
 
 
+
 # Configurações do Celery
-CELERY_BROKER_URL = 'redis://localhost:6379/0'  # ou qualquer outro broker que você esteja usando
-CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers.DatabaseScheduler'
-# CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_BROKER_URL = 'redis://default:klBtTntuxmnTNUKVToYDvADuaBWRjglC@autorack.proxy.rlwy.net:43107/0'
+
+# Use um backend para resultados (opcional, mas recomendado)
+CELERY_RESULT_BACKEND = 'redis://default:klBtTntuxmnTNUKVToYDvADuaBWRjglC@autorack.proxy.rlwy.net:43107/0'
 
 # Outras configurações do Celery
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
+
+# Configuração do Celery Beat (se você estiver usando tarefas agendadas)
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers.DatabaseScheduler'
+
 
 
 
