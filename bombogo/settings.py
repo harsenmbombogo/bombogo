@@ -25,7 +25,8 @@ ALLOWED_HOSTS = config('DJANGO_ALLOWED_HOSTS', default='localhost').split(',')
 
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://bombogo-production.up.railway.app'
+    'https://bombogo.co.mz',
+    'https://www.bombogo.co.mz',
 ]
 
 
