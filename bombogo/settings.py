@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     # Novos
     'rest_framework',
     'rest_framework_simplejwt',
+    'home',
     'app',
     'channels',
     'django_celery_beat',
