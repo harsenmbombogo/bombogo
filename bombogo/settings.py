@@ -1,6 +1,6 @@
 import dj_database_url
 from pathlib import Path
-import os
+import os, json
 from decouple import config
 import pymysql
 pymysql.install_as_MySQLdb()
@@ -23,7 +23,6 @@ DEBUG = config('DEBUG', default=True, cast=bool)
 
 ALLOWED_HOSTS = config('DJANGO_ALLOWED_HOSTS', default='localhost').split(',')
 
-FIREBASE_CREDENTIALS_JSON=config('FIREBASE_CREDENTIALS_JSON')
 
 CSRF_TRUSTED_ORIGINS = [
     'https://bombogo.co.mz',
@@ -61,35 +60,23 @@ INSTALLED_APPS = [
 
 # STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-class CustomFirebaseCredentials(credentials.ApplicationDefault):
-    def __init__(self, account_file_path: str):
-        super().__init__()
-        self._account_file_path = account_file_path
+# Carregar credenciais do Firebase da variável de ambiente
+firebase_credentials = config('FIREBASE_CREDENTIALS_JSON')
 
-    def _load_credential(self):
-        if not self._g_credential:
-            self._g_credential, self._project_id = load_credentials_from_file(self._account_file_path,
-                                                                              scopes=credentials._scopes)
+# Converter a string JSON para um dicionário Python
+credentials_dict = json.loads(firebase_credentials)
 
-
-
-custom_credentials = CustomFirebaseCredentials(FIREBASE_CREDENTIALS_JSON)
-FIREBASE_MESSAGING_APP = initialize_app(custom_credentials, name='messaging')
+# Inicializar o Firebase com as credenciais carregadas
+cred = credentials.Certificate(credentials_dict)
+FIREBASE_MESSAGING_APP = initialize_app(cred, name='messaging')
 
 FCM_DJANGO_SETTINGS = {
-     # an instance of firebase_admin.App to be used as default for all fcm-django requests
-     # default: None (the default Firebase app)
     "DEFAULT_FIREBASE_APP": FIREBASE_MESSAGING_APP,
-     # default: _('FCM Django')
     "APP_VERBOSE_NAME": "bombogo",
-     # true if you want to have only one active device per registered user at a time
-     # default: False
     "ONE_DEVICE_PER_USER": False,
-     # devices to which notifications cannot be sent,
-     # are deleted upon receiving error response from FCM
-     # default: False
-    "DELETE_INACTIVE_DEVICES": False,
+    "DELETE_INACTIVE_DEVICES": True,
 }
+
 
 
 ASGI_APPLICATION = 'bomboapi.asgi.application'
