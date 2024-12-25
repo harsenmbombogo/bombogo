@@ -60,14 +60,21 @@ INSTALLED_APPS = [
 
 # STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# Carregar credenciais do Firebase da variável de ambiente
-firebase_credentials = config('FIREBASE_CREDENTIALS_JSON')
+# Carregar as credenciais do Firebase a partir do arquivo .env
+cred = credentials.Certificate({
+    "type": config('FIREBASE_TYPE'),
+    "project_id": config('FIREBASE_PROJECT_ID'),
+    "private_key_id": config('FIREBASE_PRIVATE_KEY_ID'),
+    "private_key": config('FIREBASE_PRIVATE_KEY').replace(r'\n', '\n'),
+    "client_email": config('FIREBASE_CLIENT_EMAIL'),
+    "client_id": config('FIREBASE_CLIENT_ID'),
+    "auth_uri": config('FIREBASE_AUTH_URI'),
+    "token_uri": config('FIREBASE_TOKEN_URI'),
+    "auth_provider_x509_cert_url": config('FIREBASE_AUTH_PROVIDER_X509_CERT_URL'),
+    "client_x509_cert_url": config('FIREBASE_CLIENT_X509_CERT_URL')
+})
 
-# Converter a string JSON para um dicionário Python
-credentials_dict = json.loads(firebase_credentials)
-
-# Inicializar o Firebase com as credenciais carregadas
-cred = credentials.Certificate(credentials_dict)
+# Inicializar o Firebase Admin SDK
 FIREBASE_MESSAGING_APP = initialize_app(cred, name='messaging')
 
 FCM_DJANGO_SETTINGS = {
