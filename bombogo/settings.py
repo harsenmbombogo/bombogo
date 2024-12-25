@@ -23,6 +23,7 @@ DEBUG = config('DEBUG', default=True, cast=bool)
 
 ALLOWED_HOSTS = config('DJANGO_ALLOWED_HOSTS', default='localhost').split(',')
 
+FIREBASE_CREDENTIALS_JSON=config('FIREBASE_CREDENTIALS_JSON')
 
 CSRF_TRUSTED_ORIGINS = [
     'https://bombogo.co.mz',
@@ -72,7 +73,7 @@ class CustomFirebaseCredentials(credentials.ApplicationDefault):
 
 
 
-custom_credentials = CustomFirebaseCredentials(os.path.join(BASE_DIR,'app','firebase_credentials.json'))
+custom_credentials = CustomFirebaseCredentials(FIREBASE_CREDENTIALS_JSON)
 FIREBASE_MESSAGING_APP = initialize_app(custom_credentials, name='messaging')
 
 FCM_DJANGO_SETTINGS = {
