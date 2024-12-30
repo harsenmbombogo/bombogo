@@ -2,13 +2,15 @@
 from __future__ import absolute_import, unicode_literals
 import os
 from celery import Celery
+from decouple import config
 
 # Define o ambiente de configuração do Django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'bomboapi.settings')
 
+REDIS_URL = config('REDIS_URL', "redis://localhost:6379")
 
 # Cria a instância do Celery
-app = Celery('app', broker='redis://localhost:6379/0')
+app = Celery('app', broker=REDIS_URL)
 
 # Carrega as configurações do Django
 app.config_from_object('django.conf:settings', namespace='CELERY')
