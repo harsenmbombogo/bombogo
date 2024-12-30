@@ -18,6 +18,7 @@ APPEND_SLASH=False
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config('SECRET_KEY', default='unsafe-secret-key')
 
+REDIS_URL = config('REDIS_URL', "redis://localhost:6379")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=True, cast=bool)
 
@@ -93,7 +94,7 @@ CHANNEL_LAYERS = {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
             "hosts": [
-                "redis://default:klBtTntuxmnTNUKVToYDvADuaBWRjglC@autorack.proxy.rlwy.net:43107"
+                REDIS_URL
             ],
         },
     },
@@ -102,10 +103,10 @@ CHANNEL_LAYERS = {
 
 
 # Configurações do Celery
-CELERY_BROKER_URL = 'redis://default:klBtTntuxmnTNUKVToYDvADuaBWRjglC@autorack.proxy.rlwy.net:43107/0'
+CELERY_BROKER_URL = REDIS_URL
 
 # Use um backend para resultados (opcional, mas recomendado)
-CELERY_RESULT_BACKEND = 'redis://default:klBtTntuxmnTNUKVToYDvADuaBWRjglC@autorack.proxy.rlwy.net:43107/0'
+CELERY_RESULT_BACKEND = REDIS_URL
 
 # Outras configurações do Celery
 CELERY_ACCEPT_CONTENT = ['json']
