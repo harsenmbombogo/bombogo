@@ -452,7 +452,7 @@ class ViagemAssento(models.Model):
     data_criado=models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"Empresa {self.viagem.empresa} Assento {self.viagem} - assento: {self.assento} ({self.disponivel})"
+        return f"{self.viagem} - assento: {self.assento} ({self.disponivel})"
 
     def save(self, *args, **kwargs):
         total_assentos_disponiveis = ViagemAssento.objects.filter(viagem=self.viagem, disponivel=True).count()

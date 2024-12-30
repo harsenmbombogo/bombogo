@@ -26,27 +26,6 @@ def agendar_viagem_diaria():
 
     return "\n".join(messages)
 
-@shared_task
-def fechar_agenda_viagem():
-    data_atual = timezone.now().date()
-    messages = []
-    data_fecho = timezone.make_aware(datetime.combine(data_atual, datetime.min.time())).replace(hour=3, minute=30)
-
-    viagens_atualizadas = Viagem.objects.filter(Q(data_fecho__lte=data_fecho) & Q(activo=True)).update(activo=False)
-
-    if viagens_atualizadas > 0:
-        messages.append(f"{viagens_atualizadas} viagens fechadas.")
-    else:
-        messages.append("Nenhuma viagem foi atualizada.")
-
-    rotas = Rotas.objects.all()
-    with transaction.atomic():
-        for rota in rotas:
-            agentes = rota.agente_rota.all()
-            mensagens_novas = criar_novas_viagens(rota, agentes, data_atual)
-            messages.extend(mensagens_novas)
-
-    return "\n".join(messages)
 
 def criar_novas_viagens(rotas, agente, data_atual):
     mensagens = []
@@ -85,34 +64,50 @@ def criar_novas_viagens(rotas, agente, data_atual):
                     total_assentos_disponiveis=61,
                     duracao_viagem=calcular_duracao(data_viagem, data_chegada, rota.hora_saida, rota.hora_chegada)
                 )
+                
                 novas_viagens.append(viagem)
-                logger.debug(f"Viagem criada para a rota {rota.id} na data {data_viagem}.")
+                mensagens.append(f"Viagem criada para a rota {rota.id} na data {data_viagem}.")
             except Exception as e:
                 mensagens.append(f"Erro ao criar viagem para a rota {rota.id} na data {data_viagem}: {str(e)}")
                 logger.error(f"Erro ao criar viagem para a rota {rota.id} na data {data_viagem}: {str(e)}")
 
-    if novas_viagens:
-        Viagem.objects.bulk_create(novas_viagens)
-        novas_viagens = Viagem.objects.filter(
-            id__in=[viagem.id for viagem in novas_viagens]
-        )
+        Assentos(novas_viagens, mensagens)
 
-        for viagem in novas_viagens:
+        return mensagens
+
+
+def Assentos(novas_viagens, mensagens):
+        viagens=Viagem.objects.bulk_create(novas_viagens)
+        novas_viagens_criadas = Viagem.objects.filter(
+            data_saida__exact=[viagem.data_saida for viagem in viagens]
+        )
+        
+
+        for viagem in novas_viagens_criadas:
             try:
+                print("Viagens criadas: ", viagem.pk)
                 criar_assentos(viagem, viagem.rota.capacidade_assentos)
                 mensagens.append(f"Assentos criados para a viagem {viagem.id}")
             except Exception as e:
                 mensagens.append(f"Erro ao criar assentos para a viagem {viagem.id}: {str(e)}")
                 logger.error(f"Erro ao criar assentos para a viagem {viagem.id}: {str(e)}")
 
-    return mensagens
-
-def criar_assentos(viagem, capacidade_assentos):
-    if capacidade_assentos > 0:
-        ViagemAssento.objects.bulk_create([
-            ViagemAssento(viagem=viagem, assento=assento_num)
-            for assento_num in range(1, capacidade_assentos + 1)
-        ])
+def criar_assentos(viagem, capacidade_assentos, batch_size=30):
+    if capacidade_assentos <= 0:
+        logger.error(f"Capacidade de assentos inválida para a viagem {viagem.id}: {capacidade_assentos}")
+        raise ValueError(f"Capacidade de assentos inválida para a viagem {viagem.id}")
+    
+    # Criando os assentos
+    assentos = [ViagemAssento(viagem=viagem, assento=assento_num) for assento_num in range(1, capacidade_assentos + 1)]
+    
+    # Agora realizando a criação em lotes
+    try:
+        for i in range(0, len(assentos), batch_size):
+            ViagemAssento.objects.bulk_create(assentos[i:i + batch_size])
+            logger.debug(f"Assentos {i} a {i + batch_size} criados para a viagem {viagem.id}.")
+    except Exception as e:
+        logger.error(f"Erro ao criar assentos em lote para a viagem {viagem.id}: {str(e)}")
+        raise
 
 def calcular_duracao(data_saida, data_chegada, hora_saida, hora_chegada):
     if data_saida and data_chegada and hora_saida and hora_chegada:
@@ -138,3 +133,27 @@ def calcular_duracao(data_saida, data_chegada, hora_saida, hora_chegada):
         return " ".join(partes)
 
     return "Duração desconhecida"
+
+
+@shared_task
+def fechar_agenda_viagem():
+    data_atual = timezone.now().date()
+    messages = []
+    data_fecho = timezone.make_aware(datetime.combine(data_atual, datetime.min.time())).replace(hour=3, minute=30)
+
+    # Fechando viagens ativas que estão além do horário de fecho
+    viagens_atualizadas = Viagem.objects.filter(Q(data_fecho__lte=data_fecho) & Q(activo=True)).update(activo=False)
+
+    if viagens_atualizadas > 0:
+        messages.append(f"{viagens_atualizadas} viagens fechadas.")
+    else:
+        messages.append("Nenhuma viagem foi atualizada.")
+
+    rotas = Rotas.objects.all()
+    with transaction.atomic():
+        for rota in rotas:
+            agentes = rota.agente_rota.all()
+            mensagens_novas = criar_novas_viagens(rota, agentes, data_atual)
+            messages.extend(mensagens_novas)
+
+    return "\n".join(messages)
