@@ -7,7 +7,7 @@ from .tasks import agendar_viagem_diaria, fechar_agenda_viagem
 
 
 # Define o ambiente de configuração do Django
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'bomboapi.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'bombogo.settings')
 
 REDIS_URL = config('REDIS_URL', "redis://localhost:6379")
 
