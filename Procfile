@@ -1,4 +1,4 @@
-web: gunicorn bombogo.wsgi --log-file - --timeout 120
+web: gunicorn bombogo.wsgi --log-file - --timeout 240
 
 
 worker: celery -A bombogo worker --loglevel=info
