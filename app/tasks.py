@@ -85,7 +85,7 @@ def Assentos(novas_viagens, mensagens):
 
         for viagem in novas_viagens_criadas:
             try:
-                print("Viagens criadas: ", viagem.pk)
+                
                 criar_assentos(viagem, viagem.rota.capacidade_assentos)
                 mensagens.append(f"Assentos criados para a viagem {viagem.id}")
             except Exception as e:
