@@ -19,7 +19,7 @@ def agendar_viagem_diaria():
     with transaction.atomic():
         for agente in agentes:
             logger.debug(f"Processando agente {agente}.")
-            rotas = agente.rota_agente.all()
+            rotas = agente.rota_agente.all()  # Verifique o nome correto do campo de relação
 
             mensagens_novas = criar_novas_viagens(rotas, agente, data_atual)
             messages.extend(mensagens_novas)
@@ -73,15 +73,15 @@ def criar_novas_viagens(rotas, agente, data_atual):
 
         Assentos(novas_viagens, mensagens)
 
-        return mensagens
+    return mensagens
 
 
 def Assentos(novas_viagens, mensagens):
-        viagens=Viagem.objects.bulk_create(novas_viagens)
+    try:
+        viagens = Viagem.objects.bulk_create(novas_viagens)
         novas_viagens_criadas = Viagem.objects.filter(
-            data_saida__exact=[viagem.data_saida for viagem in viagens]
+            data_saida__in=[viagem.data_saida for viagem in viagens]  # Uso do __in para comparar com a lista de datas
         )
-        
 
         for viagem in novas_viagens_criadas:
             try:
@@ -91,6 +91,10 @@ def Assentos(novas_viagens, mensagens):
             except Exception as e:
                 mensagens.append(f"Erro ao criar assentos para a viagem {viagem.id}: {str(e)}")
                 logger.error(f"Erro ao criar assentos para a viagem {viagem.id}: {str(e)}")
+    except Exception as e:
+        mensagens.append(f"Erro ao criar viagens em lote: {str(e)}")
+        logger.error(f"Erro ao criar viagens em lote: {str(e)}")
+
 
 def criar_assentos(viagem, capacidade_assentos, batch_size=30):
     if capacidade_assentos <= 0:
@@ -109,30 +113,31 @@ def criar_assentos(viagem, capacidade_assentos, batch_size=30):
         logger.error(f"Erro ao criar assentos em lote para a viagem {viagem.id}: {str(e)}")
         raise
 
+
 def calcular_duracao(data_saida, data_chegada, hora_saida, hora_chegada):
-    if data_saida and data_chegada and hora_saida and hora_chegada:
-        datetime_saida = datetime.combine(data_saida, hora_saida)
-        datetime_chegada = datetime.combine(data_chegada, hora_chegada)
-        duracao = datetime_chegada - datetime_saida
+    if not (data_saida and data_chegada and hora_saida and hora_chegada):
+        return "Duração inválida"
 
-        dias, segundos = duracao.days, duracao.seconds
-        horas = segundos // 3600
-        minutos = (segundos % 3600) // 60
+    datetime_saida = datetime.combine(data_saida, hora_saida)
+    datetime_chegada = datetime.combine(data_chegada, hora_chegada)
+    duracao = datetime_chegada - datetime_saida
 
-        if dias == 0 and horas == 0 and minutos == 0:
-            return "Menos de um minuto"
+    dias, segundos = duracao.days, duracao.seconds
+    horas = segundos // 3600
+    minutos = (segundos % 3600) // 60
 
-        partes = []
-        if dias > 0:
-            partes.append(f"{dias} dia{'s' if dias > 1 else ''}")
-        if horas > 0:
-            partes.append(f"{horas}h")
-        if minutos > 0:
-            partes.append(f"{minutos}min")
+    if dias == 0 and horas == 0 and minutos == 0:
+        return "Menos de um minuto"
 
-        return " ".join(partes)
+    partes = []
+    if dias > 0:
+        partes.append(f"{dias} dia{'s' if dias > 1 else ''}")
+    if horas > 0:
+        partes.append(f"{horas}h")
+    if minutos > 0:
+        partes.append(f"{minutos}min")
 
-    return "Duração desconhecida"
+    return " ".join(partes)
 
 
 @shared_task
@@ -152,7 +157,7 @@ def fechar_agenda_viagem():
     rotas = Rotas.objects.all()
     with transaction.atomic():
         for rota in rotas:
-            agentes = rota.agente_rota.all()
+            agentes = rota.agente_rota.all()  # Verifique o nome correto do campo de relação
             mensagens_novas = criar_novas_viagens(rota, agentes, data_atual)
             messages.extend(mensagens_novas)
 
