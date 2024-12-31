@@ -23,6 +23,7 @@ router.register(r'perguntas_frequentes_operador', PerguntasFrequentesOperadorVie
 
 
 urlpatterns = [
+    path('validar_token/', VerifyTokenView.as_view(), name='validar_token'),
     path('', home.index, name='index'),
     path('app_operador/', ConfiguracoesAppOperadorView.as_view(), name='app_operador'),
     path('app_agente/', ConfiguracoesAppAgenteView.as_view(), name='app_agente'),
