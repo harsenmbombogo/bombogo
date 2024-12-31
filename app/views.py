@@ -19,8 +19,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.exceptions import NotFound
 import locale
 from django.contrib.auth.password_validation import validate_password
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.authentication import TokenAuthentication
 from .twilio_config import *
 
 
@@ -38,8 +36,7 @@ from firebase_admin.messaging import Message, Notification
 
 # verificar se o usuario ainda tem auterizacao para o acesso usando token
 class VerifyTokenView(APIView):
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
         return Response({"message": "Token is valid."}, status=status.HTTP_200_OK)
