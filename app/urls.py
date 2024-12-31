@@ -6,7 +6,7 @@ from .views import *
 router = DefaultRouter()
 router.register(r'clientes', ClienteViewSet)
 router.register(r'operadores', OperadorViewSet)
-router.register(r'empresass', EmpresaViewSet)
+router.register(r'empresas', EmpresaViewSet)
 router.register(r'pontovendas', PontoVendaViewSet)
 router.register(r'rotas', RotasViewSet)
 router.register(r'operador_agente_crud', OperadorAgenteViewSet)
