@@ -42,7 +42,6 @@ CSRF_COOKIE_SECURE = not DEBUG
 SESSION_COOKIE_SECURE = not DEBUG
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -52,7 +51,6 @@ INSTALLED_APPS = [
     'cloudinary_storage',
     'cloudinary',
     'django.contrib.staticfiles',
-    # Novos
     'rest_framework',
     'rest_framework_simplejwt',
     'home',
@@ -60,10 +58,10 @@ INSTALLED_APPS = [
     'channels',
     'django_celery_beat',
     'fcm_django',
-    
-    # 'django-filter'
-    # 'corsheaders',
 ]
+# 'django-filter'
+# 'corsheaders',
+
 
 # STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
