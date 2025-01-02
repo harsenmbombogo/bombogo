@@ -583,29 +583,32 @@ class BilheteListCreateView(generics.ListCreateAPIView):
         if Bilhete.objects.filter(viagem=viagem_id, assento=assento, status_bilhete='Aprovado').exists():
             print("Já existe um bilhete comprado para essa viagem.")
             raise ValidationError("Já existe um bilhete comprado para essa viagem.")
-        
-        bilhete=Bilhete.objects.create(
-            cliente=request.user.cliente,
-            venda=venda,
-            viagem=viagem_id,
-            origem=request.data.get('origem'),
-            destino=request.data.get('destino'),
+        try:
 
-            assento=request.data.get('assento'),
-            preco=request.data.get('preco'),
-            nome_passageiro=request.data.get('nome_passageiro'),
-            nome_familiar=request.data.get('nome_familiar'),
+            bilhete=Bilhete.objects.create(
+                cliente=request.user.cliente,
+                venda=venda,
+                viagem=viagem_id,
+                origem=request.data.get('origem'),
+                destino=request.data.get('destino'),
 
-            contacto_passageiro=request.data.get('contacto_passageiro'),
-            contacto_familiar=request.data.get('contacto_familiar'),
-        )
-        
-        sendMessage(viagem_id.agente.user.pk, "Pedido de Reserva ", f"""Rota {viagem_id.rota.origem.nome} - {viagem_id.rota.destino.nome} ({viagem_id.data_saida})
-        """,1)
-        serializer=BilheteSerializer(bilhete, many=True, context={'request':request})
+                assento=request.data.get('assento'),
+                preco=request.data.get('preco'),
+                nome_passageiro=request.data.get('nome_passageiro'),
+                nome_familiar=request.data.get('nome_familiar'),
 
-        return Response({'message': 'Criado com sucesso.'}, status=status.HTTP_201_CREATED)
+                contacto_passageiro=request.data.get('contacto_passageiro'),
+                contacto_familiar=request.data.get('contacto_familiar'),
+            )
+            
+            sendMessage(viagem_id.agente.user.pk, "Pedido de Reserva ", f"""Rota {viagem_id.rota.origem.nome} - {viagem_id.rota.destino.nome} ({viagem_id.data_saida})
+            """,1)
+            serializer=BilheteSerializer(bilhete, many=True, context={'request':request})
 
+            return Response({'message': 'Criado com sucesso.'}, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            print("Erro: ",e)
+            return Response({'message': f'Erro:( {e}'}, status=status.HTTP_400_BAD_REQUEST)
 
 class BilheteDetailView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [permissions.IsAuthenticated]
