@@ -1284,20 +1284,19 @@ class AgenteRotaViagemBilheteUpdateView(APIView):
             # Atualizando o status e realizando ações associadas
             match status_bilhete:
                 case 'Aprovado':
-                    sendMessage(bilhete.cliente.user.pk, "Reserva", "Seu pedido de reserva foi aprovado.", bilhete.pk)
-                    
+                    print(ViagemAssento.objects.filter(viagem=bilhete.viagem, assento=bilhete.assento).count())
                     assento = ViagemAssento.objects.get(viagem=bilhete.viagem, assento=bilhete.assento)
                     assento.activo = True
                     assento.disponivel = False
                     assento.save()
+                    sendMessage(bilhete.cliente.user.pk, "Reserva", "Seu pedido de reserva foi aprovado.", bilhete.pk)
                     
                 case 'Cancelado':
-                    sendMessage(bilhete.cliente.user.pk, "Reserva", "Seu pedido de reserva foi cancelado.", bilhete.pk)
-                    
                     assento = ViagemAssento.objects.get(viagem=bilhete.viagem, assento=bilhete.assento)
                     assento.activo = False
                     assento.disponivel = True
                     assento.save()
+                    sendMessage(bilhete.cliente.user.pk, "Reserva", "Seu pedido de reserva foi cancelado.", bilhete.pk)
 
             # Salvar as alterações no modelo Bilhete
             bilhete.save()  # Isso salvará o modelo, incluindo qualquer campo de mídia automaticamente
