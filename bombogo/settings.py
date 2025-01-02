@@ -156,9 +156,6 @@ CLOUDINARY_STORAGE = {
 # Definir o armazenamento padrão de mídia
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
-# URL base para acessar mídia
-MEDIA_URL = '/media/'
-
 
 MIDDLEWARE = [
     # 'whitenoise.middleware.WhiteNoiseMiddleware',  # Coloque isso logo após SecurityMiddleware
