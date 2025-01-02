@@ -1302,6 +1302,7 @@ class AgenteRotaViagemBilheteUpdateView(APIView):
             return Response({"":serializer.data,'message': 'Bilhete actualizado com sucesso.',}, status=status.HTTP_200_OK)
             
         except Exception as e:
+            print(e)
             return Response({'error': f'Bilhete não encontrado. {e}'}, status=status.HTTP_404_NOT_FOUND)
 
 
