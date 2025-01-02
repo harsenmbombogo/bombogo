@@ -43,7 +43,7 @@ class ConfiguracoesAppAgente(models.Model):
     descricao_app=models.CharField(max_length=150, blank=True, null=True, )
     politica_privacidade_app=models.TextField(blank=True, null=True,)
     termos_condicoes_app=models.TextField(blank=True, null=True,)
-    logotipo_app = CloudinaryField(upload_to='logotipo_app_agente')
+    logotipo_app = CloudinaryField('logotipo_app_agente')
     data_cadastro=models.DateTimeField(auto_now=True)
 
     def __str__(self):
