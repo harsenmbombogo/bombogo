@@ -5,7 +5,6 @@ from decouple import config
 import pymysql
 pymysql.install_as_MySQLdb()
 from firebase_admin import initialize_app, credentials
-from google.auth import load_credentials_from_file
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,6 +22,11 @@ REDIS_URL = config('REDIS_URL', "redis://localhost:6379")
 DEBUG = config('DEBUG', default=True, cast=bool)
 
 ALLOWED_HOSTS = config('DJANGO_ALLOWED_HOSTS', default='localhost').split(',')
+
+# CONFIRACAO DE CLOUDINARY
+CLOUD_NAME_CLOUDINARY  = config('CLOUND_NAME')
+API_KEY_CLOUDINARY = config('API_KEY')
+API_SECRET_CLOUDINARY  = config('API_SECRET')
 
 
 CSRF_TRUSTED_ORIGINS = [
@@ -45,6 +49,8 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'cloudinary_storage',
+    'cloudinary',
     'django.contrib.staticfiles',
     # Novos
     'rest_framework',
@@ -127,8 +133,8 @@ REST_FRAMEWORK = {
 from datetime import timedelta
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=7),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=31),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=31),
     'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': True,
     'ALGORITHM': 'HS256',
@@ -136,6 +142,22 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
     'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
 }
+
+
+
+# Configuração do Cloudinary
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': CLOUD_NAME_CLOUDINARY,
+    'API_KEY': API_KEY_CLOUDINARY,
+    'API_SECRET': API_SECRET_CLOUDINARY,
+}
+
+# Definir o armazenamento padrão de mídia
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+# URL base para acessar mídia
+MEDIA_URL = '/media/'
+
 
 MIDDLEWARE = [
     # 'whitenoise.middleware.WhiteNoiseMiddleware',  # Coloque isso logo após SecurityMiddleware
@@ -174,20 +196,6 @@ WSGI_APPLICATION = 'bombogo.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'bombogo',
-#         'USER': 'root',
-#         'PASSWORD': ' ',
-#         'HOST': 'localhost',
-#         'PORT': '3306',
-#         # 'OPTIONS': {
-#         #     'autocommit': True,  # Isso ajuda com transações
-#         # },
-#     }
-# }
 
 # Configuração do banco de dados (MySQL usando dj-database-url)
 DATABASES = {
@@ -251,7 +259,7 @@ STATICFILES_DIRS = [
 
 # Medias
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR,'media')
+# MEDIA_ROOT = os.path.join(BASE_DIR,'media')
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
