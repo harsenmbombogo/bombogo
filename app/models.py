@@ -52,7 +52,7 @@ class ConfiguracoesAppAgente(models.Model):
 class AppMetodoPagamento(models.Model):
     agencia=models.CharField(max_length=150, blank=True, null=True, unique=True)
     numero_conta=models.CharField(max_length=150, blank=True, null=True, unique=True)
-    logotipo_agencia = CloudinaryField('logotipo_agencia/', blank=True, null=True)
+    logotipo_agencia = CloudinaryField('logotipo_agencia/')
     data_cadastro=models.DateTimeField(auto_now=True)
 
     def __str__(self):
