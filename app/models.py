@@ -549,21 +549,24 @@ class Bilhete(models.Model):
     def __str__(self):
         return f"Bilhete {self.referencia} - passageiro: {self.nome_passageiro} status: ({self.status_bilhete})"
 
+        
     def save(self, *args, **kwargs):
         if not self.referencia:
             self.referencia = self.gerar_referencia_unica()
 
+        # Preencher os campos com base na viagem
         self.hora_saida = self.viagem.hora_saida
         self.data_saida = self.viagem.data_saida
         self.duracao = self.viagem.duracao_viagem
         self.empresa = self.viagem.rota.empresa
-
         self.contacto_empresa = self.viagem.agente.numero_telefone
 
+        # Atualizar o status da venda, se existir
         if self.venda:
             self.venda.status = "Aprovado"
+            self.venda.save(update_fields=["status"])
 
-        # Gerar o QR code
+        # Gerar os dados do QR code
         qr_data = f"Bilhete: {self.referencia} | Passageiro: {self.nome_passageiro} | Destino: {self.destino}"
         qr = qrcode.QRCode(
             version=1,
@@ -573,21 +576,22 @@ class Bilhete(models.Model):
         )
         qr.add_data(qr_data)
         qr.make(fit=True)
-        img = qr.make_image(fill='black', back_color='white')
+        img = qr.make_image(fill="black", back_color="white")
 
-        # Salvar a imagem do QR code como arquivo em memória
+        # Salvar o QR code como um arquivo em memória
         buffer = BytesIO()
         img.save(buffer, format="PNG")
-        buffer.seek(0)  # Garantir que o ponteiro do buffer está no início
+        buffer.seek(0)
 
-        # Nome do arquivo para o campo `qrcode`
+        # Gerar o nome do arquivo para o QR code
         file_name = f"bilhete_{self.referencia}.png"
 
-        # Salvar o arquivo no campo `qrcode` usando ContentFile
+        # Salvar o QR code no campo CloudinaryField
         self.qrcode.save(file_name, ContentFile(buffer.read()), save=False)
+        buffer.close()
 
-        # Agora, salve o modelo com o arquivo do QR code já incluído
-        super(Bilhete, self).save(*args, **kwargs)
+        # Salvar o modelo com o QR code incluído
+        super().save(*args, **kwargs)
 
     def gerar_referencia_unica(self):
         data_formatada = timezone.now().strftime('%Y%m%d')
