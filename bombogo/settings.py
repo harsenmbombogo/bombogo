@@ -149,7 +149,6 @@ CLOUDINARY_STORAGE = {
     'CLOUD_NAME': CLOUD_NAME_CLOUDINARY,
     'API_KEY': API_KEY_CLOUDINARY,
     'API_SECRET': API_SECRET_CLOUDINARY,
-    'secure':True,
 }
 
 # Definir o armazenamento padrão de mídia
@@ -255,7 +254,7 @@ STATICFILES_DIRS = [
 
 
 # Medias
-MEDIA_URL = '/media/'
+# MEDIA_URL = '/media/'
 # MEDIA_ROOT = os.path.join(BASE_DIR,'media')
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field

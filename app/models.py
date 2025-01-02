@@ -12,8 +12,7 @@ from django.dispatch import receiver
 import qrcode
 from io import BytesIO
 from django.core.files import File
-from PIL import Image
-import random
+from cloudinary.models import CloudinaryField
 
 class ConfiguracoesAppCliente(models.Model):
     nome_app=models.CharField(max_length=150, blank=True, null=True, unique=True)
