@@ -24,7 +24,7 @@ DEBUG = config('DEBUG', default=True, cast=bool)
 ALLOWED_HOSTS = config('DJANGO_ALLOWED_HOSTS', default='localhost').split(',')
 
 # CONFIRACAO DE CLOUDINARY
-CLOUD_NAME_CLOUDINARY  = config('CLOUND_NAME')
+CLOUD_NAME_CLOUDINARY  = config('CLOUD_NAME')
 API_KEY_CLOUDINARY = config('API_KEY')
 API_SECRET_CLOUDINARY  = config('API_SECRET')
 
