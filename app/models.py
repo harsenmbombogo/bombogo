@@ -14,6 +14,7 @@ from io import BytesIO
 from django.core.files import File
 from django.core.files.base import ContentFile
 from cloudinary.models import CloudinaryField
+import cloudinary
 
 class ConfiguracoesAppCliente(models.Model):
     nome_app=models.CharField(max_length=150, blank=True, null=True, unique=True)
@@ -506,6 +507,11 @@ class VendaBilhete(models.Model):
 
 
 
+from io import BytesIO
+from django.core.files.base import ContentFile
+import qrcode
+import cloudinary.uploader
+
 class Bilhete(models.Model):
     STATUS_CHOICES = [
         ("Pendente", "Pendente"),
@@ -538,7 +544,7 @@ class Bilhete(models.Model):
     status_bilhete = models.CharField(max_length=10, choices=STATUS_CHOICES, default="Pendente")
     status_viagem = models.CharField(max_length=10, choices=STATUS_VIAGEM_CHOICES, default="Pendente")
     preco = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-    
+
     duracao = models.CharField(max_length=500, blank=True, null=True)
     contacto_empresa = models.CharField(max_length=500, blank=True, null=True)
     qrcode = CloudinaryField('bilhete_qr_code')
@@ -549,7 +555,6 @@ class Bilhete(models.Model):
     def __str__(self):
         return f"Bilhete {self.referencia} - passageiro: {self.nome_passageiro} status: ({self.status_bilhete})"
 
-        
     def save(self, *args, **kwargs):
         if not self.referencia:
             self.referencia = self.gerar_referencia_unica()
@@ -583,14 +588,20 @@ class Bilhete(models.Model):
         img.save(buffer, format="PNG")
         buffer.seek(0)
 
-        # Gerar o nome do arquivo para o QR code
-        file_name = f"bilhete_{self.referencia}.png"
+        # Upload para o Cloudinary
+        try:
+            upload_result = cloudinary.uploader.upload(
+                buffer,
+                public_id=f"bilhete_{self.referencia}",
+                resource_type="image"
+            )
+            self.qrcode = upload_result.get("url")  # Salvar a URL do QR code
+        except Exception as e:
+            raise ValueError(f"Erro ao carregar o QR code no Cloudinary: {e}")
+        finally:
+            buffer.close()
 
-        # Salvar o QR code no campo CloudinaryField
-        self.qrcode.save(file_name, ContentFile(buffer.read()), save=False)
-        buffer.close()
-
-        # Salvar o modelo com o QR code incluído
+        # Salvar o modelo
         super().save(*args, **kwargs)
 
     def gerar_referencia_unica(self):
