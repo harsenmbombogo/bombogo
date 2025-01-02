@@ -12,7 +12,7 @@ from django.dispatch import receiver
 import qrcode
 from io import BytesIO
 from django.core.files import File
-
+from cloudinary.models import CloudinaryField
 
 class ConfiguracoesAppCliente(models.Model):
     nome_app=models.CharField(max_length=150, blank=True, null=True, unique=True)
@@ -52,7 +52,7 @@ class ConfiguracoesAppAgente(models.Model):
 class AppMetodoPagamento(models.Model):
     agencia=models.CharField(max_length=150, blank=True, null=True, unique=True)
     numero_conta=models.CharField(max_length=150, blank=True, null=True, unique=True)
-    logotipo_agencia = models.ImageField(upload_to='logotipo_agencia/', blank=True, null=True)
+    logotipo_agencia = CloudinaryField('logotipo_agencia')
     data_cadastro=models.DateTimeField(auto_now=True)
 
     def __str__(self):
