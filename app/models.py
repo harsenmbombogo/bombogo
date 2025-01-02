@@ -575,13 +575,15 @@ class Bilhete(models.Model):
         qr.make(fit=True)
         img = qr.make_image(fill='black', back_color='white')
 
-        # Salvar a imagem do QR code como arquivo
+        # Salvar a imagem do QR code como arquivo em memória
         buffer = BytesIO()
         img.save(buffer, format="PNG")
-        file_name = f"bilhete_{self.referencia}.png"
-        buffer.seek(0)
+        buffer.seek(0)  # Garantir que o ponteiro do buffer está no início
 
-        # Salvar o arquivo de QR code no CloudinaryField
+        # Nome do arquivo para o campo `qrcode`
+        file_name = f"bilhete_{self.referencia}.png"
+
+        # Salvar o arquivo no campo `qrcode` usando ContentFile
         self.qrcode.save(file_name, ContentFile(buffer.read()), save=False)
 
         # Agora, salve o modelo com o arquivo do QR code já incluído

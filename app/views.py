@@ -603,7 +603,6 @@ class BilheteListCreateView(generics.ListCreateAPIView):
             
             sendMessage(viagem_id.agente.user.pk, "Pedido de Reserva ", f"""Rota {viagem_id.rota.origem.nome} - {viagem_id.rota.destino.nome} ({viagem_id.data_saida})
             """,1)
-            serializer=BilheteSerializer(bilhete, many=True, context={'request':request})
 
             return Response({'message': 'Criado com sucesso.'}, status=status.HTTP_201_CREATED)
         except Exception as e:
