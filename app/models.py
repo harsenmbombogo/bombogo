@@ -12,6 +12,7 @@ from django.dispatch import receiver
 import qrcode
 from io import BytesIO
 from django.core.files import File
+from django.core.files.base import ContentFile
 from cloudinary.models import CloudinaryField
 
 class ConfiguracoesAppCliente(models.Model):
@@ -504,6 +505,7 @@ class VendaBilhete(models.Model):
         ordering=['-pk']
 
 
+
 class Bilhete(models.Model):
     STATUS_CHOICES = [
         ("Pendente", "Pendente"),
@@ -519,7 +521,7 @@ class Bilhete(models.Model):
     ]
 
     venda = models.ForeignKey(VendaBilhete, on_delete=models.CASCADE, related_name='bilhete_vendido')
-    referencia = models.CharField( unique=True,max_length=100)
+    referencia = models.CharField(unique=True, max_length=100)
     viagem = models.ForeignKey(Viagem, on_delete=models.CASCADE, related_name='bilhetes_viagem')
     empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE, related_name='bilhetes_empresa')
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE, related_name='bilhetes_cliente')
@@ -548,24 +550,20 @@ class Bilhete(models.Model):
         return f"Bilhete {self.referencia} - passageiro: {self.nome_passageiro} status: ({self.status_bilhete})"
 
     def save(self, *args, **kwargs):
-        # Gerar a referência do bilhete como um número
-        # Gera a referência do bilhete se ela ainda não existir
         if not self.referencia:
             self.referencia = self.gerar_referencia_unica()
 
-        self.hora_saida=self.viagem.hora_saida
-        self.data_saida=self.viagem.data_saida
-        self.duracao=self.viagem.duracao_viagem
-        self.empresa=self.viagem.rota.empresa
+        self.hora_saida = self.viagem.hora_saida
+        self.data_saida = self.viagem.data_saida
+        self.duracao = self.viagem.duracao_viagem
+        self.empresa = self.viagem.rota.empresa
 
-        # Pegar o contacto da empresa
         self.contacto_empresa = self.viagem.agente.numero_telefone
 
-        # Atualizar status do pagamento com base na venda
         if self.venda:
             self.venda.status = "Aprovado"
 
-        # Gerar o QR code com a referência do bilhete
+        # Gerar o QR code
         qr_data = f"Bilhete: {self.referencia} | Passageiro: {self.nome_passageiro} | Destino: {self.destino}"
         qr = qrcode.QRCode(
             version=1,
@@ -577,32 +575,30 @@ class Bilhete(models.Model):
         qr.make(fit=True)
         img = qr.make_image(fill='black', back_color='white')
 
-        # Salvar a imagem do QR code no campo `qrcode`
+        # Salvar a imagem do QR code como arquivo
         buffer = BytesIO()
         img.save(buffer, format="PNG")
         file_name = f"bilhete_{self.referencia}.png"
-        self.qrcode.save(file_name, File(buffer), save=False)
+        buffer.seek(0)
 
+        # Salvar o arquivo de QR code no CloudinaryField
+        self.qrcode.save(file_name, ContentFile(buffer.read()), save=False)
+
+        # Agora, salve o modelo com o arquivo do QR code já incluído
         super(Bilhete, self).save(*args, **kwargs)
-        
 
     def gerar_referencia_unica(self):
-        """
-        Gera uma referência única para o bilhete e verifica se já existe.
-        A referência inclui o ID da viagem, a data de criação e um UUID curto.
-        """
         data_formatada = timezone.now().strftime('%Y%m%d')
         rota_id = self.viagem.rota.id
         
-        # Tenta gerar uma referência única até encontrar uma que não exista
         while True:
-            codigo_unico = uuid.uuid4().hex[:6].upper()  # Gera um código de 6 caracteres
+            codigo_unico = uuid.uuid4().hex[:6].upper()  
             referencia = f"{rota_id}-{data_formatada}-{codigo_unico}"
             if not Bilhete.objects.filter(referencia=referencia).exists():
                 return referencia
-            
+
     class Meta:
-        ordering=['-pk']
+        ordering = ['-pk']
 
 
 class ClassificacaoViagem(models.Model):

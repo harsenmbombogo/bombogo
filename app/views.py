@@ -1271,40 +1271,49 @@ class AgenteRotaViagemBilheteUpdateView(APIView):
     serializer_class = BilheteSerializer
 
     def put(self, request):
-        
         try:
-            pk=request.data['id']
-            status_bilhete=request.data['status_bilhete']
-            motivo=request.data['motivo']
-            bilhete=Bilhete.objects.get(pk=pk)
-            bilhete.status_bilhete=status_bilhete
-            bilhete.motivo=motivo
-            bilhete.save()
-            match status_bilhete:
-                case _ if status_bilhete in 'Aprovado':
-                    sendMessage(bilhete.cliente.user.pk, "Reserva ", f""" Seu pedido de reserva foi aprovado. """,bilhete.pk)
-                    
-                    assento=ViagemAssento.objects.get(viagem=bilhete.viagem, assento=bilhete.assento)
-                    assento.activo=True
-                    assento.disponivel=False
-                    assento.save()
-                    
-                case _ if status_bilhete in 'Cancelado':
-                    sendMessage(bilhete.cliente.user.pk, "Reserva ", f""" Seu pedido de reserva foi cancelado. """,bilhete.pk)
-                    assento=ViagemAssento.objects.get(viagem=bilhete.viagem, assento=bilhete.assento)
-                    assento.activo=False
-                    assento.disponivel=True
-                    assento.save()
-                case _:
-                    pass
+            pk = request.data['id']
+            status_bilhete = request.data['status_bilhete']
+            motivo = request.data['motivo']
+            
+            # Obtendo o bilhete existente
+            bilhete = Bilhete.objects.get(pk=pk)
+            bilhete.status_bilhete = status_bilhete
+            bilhete.motivo = motivo
 
+            # Atualizando o status e realizando ações associadas
+            match status_bilhete:
+                case 'Aprovado':
+                    sendMessage(bilhete.cliente.user.pk, "Reserva", "Seu pedido de reserva foi aprovado.", bilhete.pk)
+                    
+                    assento = ViagemAssento.objects.get(viagem=bilhete.viagem, assento=bilhete.assento)
+                    assento.activo = True
+                    assento.disponivel = False
+                    assento.save()
+                    
+                case 'Cancelado':
+                    sendMessage(bilhete.cliente.user.pk, "Reserva", "Seu pedido de reserva foi cancelado.", bilhete.pk)
+                    
+                    assento = ViagemAssento.objects.get(viagem=bilhete.viagem, assento=bilhete.assento)
+                    assento.activo = False
+                    assento.disponivel = True
+                    assento.save()
+
+            # Salvar as alterações no modelo Bilhete
+            bilhete.save()  # Isso salvará o modelo, incluindo qualquer campo de mídia automaticamente
+
+            # Serializando a resposta
             serializer = BilheteSerializer(bilhete)
-            return Response({"":serializer.data,'message': 'Bilhete actualizado com sucesso.',}, status=status.HTTP_200_OK)
+            return Response({
+                'data': serializer.data,
+                'message': 'Bilhete atualizado com sucesso.',
+            }, status=status.HTTP_200_OK)
             
         except Exception as e:
             print(e)
-            return Response({'error': f'Bilhete não encontrado. {e}'}, status=status.HTTP_404_NOT_FOUND)
-
+            return Response({
+                'error': f'Bilhete não encontrado ou erro durante atualização. {e}'
+            }, status=status.HTTP_404_NOT_FOUND)
 
 # Vendas diarias de bilhetes
 class AgenteVendasDiariasBilhetesView(APIView):
