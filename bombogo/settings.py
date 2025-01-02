@@ -36,10 +36,11 @@ CSRF_TRUSTED_ORIGINS = [
 
 
 # Configurações de segurança (apenas para produção)
-# SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-SECURE_SSL_REDIRECT = not DEBUG
-CSRF_COOKIE_SECURE = not DEBUG
-SESSION_COOKIE_SECURE = not DEBUG
+# Redirecionamento de HTTP para HTTPS
+SECURE_SSL_REDIRECT = True  # Garante redirecionamento para HTTPS
+SESSION_COOKIE_SECURE = True  # Garante que cookies só sejam enviados via HTTPS
+CSRF_COOKIE_SECURE = True  # Garante que o cookie CSRF seja enviado via HTTPS
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Application definition
 INSTALLED_APPS = [
