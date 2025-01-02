@@ -581,6 +581,7 @@ class BilheteListCreateView(generics.ListCreateAPIView):
 
         # Verifica se já existe um bilhete para a viagem e o cliente (baseado em algum dado relevante, como nome)
         if Bilhete.objects.filter(viagem=viagem_id, assento=assento, status_bilhete='Aprovado').exists():
+            print("Já existe um bilhete comprado para essa viagem.")
             raise ValidationError("Já existe um bilhete comprado para essa viagem.")
         
         bilhete=Bilhete.objects.create(
