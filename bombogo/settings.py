@@ -5,6 +5,10 @@ from decouple import config
 import pymysql
 pymysql.install_as_MySQLdb()
 from firebase_admin import initialize_app, credentials
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -62,7 +66,15 @@ INSTALLED_APPS = [
 ]
 # 'django-filter'
 # 'corsheaders',
+# Set up your Cloudinary credentials
+cloudinary.config(
+    cloud_name = CLOUD_NAME_CLOUDINARY,  # Replace with your cloud name
+    api_key = API_KEY_CLOUDINARY,        # Replace with your API key
+    api_secret = API_SECRET_CLOUDINARY   # Replace with your API secret
+)
 
+# Definir o armazenamento padrão de mídia
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
@@ -143,16 +155,6 @@ SIMPLE_JWT = {
 }
 
 
-
-# Configuração do Cloudinary
-CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': CLOUD_NAME_CLOUDINARY,
-    'API_KEY': API_KEY_CLOUDINARY,
-    'API_SECRET': API_SECRET_CLOUDINARY,
-}
-
-# Definir o armazenamento padrão de mídia
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 
 MIDDLEWARE = [
@@ -254,8 +256,7 @@ STATICFILES_DIRS = [
 
 
 # Medias
-# MEDIA_URL = '/media/'
-MEDIA_URL = f'https://res.cloudinary.com/{CLOUD_NAME_CLOUDINARY}/image/upload/'
+MEDIA_URL = '/media/'
 
 # MEDIA_ROOT = os.path.join(BASE_DIR,'media')
 # Default primary key field type
