@@ -150,6 +150,7 @@ CLOUDINARY_STORAGE = {
     'CLOUD_NAME': CLOUD_NAME_CLOUDINARY,
     'API_KEY': API_KEY_CLOUDINARY,
     'API_SECRET': API_SECRET_CLOUDINARY,
+    'secure':True,
 }
 
 # Definir o armazenamento padrão de mídia
