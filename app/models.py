@@ -19,7 +19,7 @@ class ConfiguracoesAppCliente(models.Model):
     descricao_app=models.CharField(max_length=150, blank=True, null=True,)
     politica_privacidade_app=models.TextField(blank=True, null=True)
     termos_condicoes_app=models.TextField(blank=True, null=True)
-    logotipo_app = models.ImageField(upload_to='logotipo_app_cliente/', blank=True, null=True)
+    logotipo_app = CloudinaryField('logotipo_app_cliente/', blank=True, null=True)
     data_cadastro=models.DateTimeField(auto_now=True)
 
     def __str__(self):
@@ -31,7 +31,7 @@ class ConfiguracoesAppOperador(models.Model):
     descricao_app=models.CharField(max_length=150, blank=True, null=True,)
     politica_privacidade_app=models.TextField(blank=True, null=True, )
     termos_condicoes_app=models.TextField(blank=True, null=True,)
-    logotipo_app = models.ImageField(upload_to='logotipo_app_oerador/', blank=True, null=True)
+    logotipo_app = CloudinaryField('logotipo_app_oerador/', blank=True, null=True)
     data_cadastro=models.DateTimeField(auto_now=True)
 
     def __str__(self):
@@ -43,7 +43,7 @@ class ConfiguracoesAppAgente(models.Model):
     descricao_app=models.CharField(max_length=150, blank=True, null=True, )
     politica_privacidade_app=models.TextField(blank=True, null=True,)
     termos_condicoes_app=models.TextField(blank=True, null=True,)
-    logotipo_app = models.ImageField(upload_to='logotipo_app_agente/', blank=True, null=True)
+    logotipo_app = CloudinaryField('logotipo_app_agente/', blank=True, null=True)
     data_cadastro=models.DateTimeField(auto_now=True)
 
     def __str__(self):
@@ -52,7 +52,7 @@ class ConfiguracoesAppAgente(models.Model):
 class AppMetodoPagamento(models.Model):
     agencia=models.CharField(max_length=150, blank=True, null=True, unique=True)
     numero_conta=models.CharField(max_length=150, blank=True, null=True, unique=True)
-    logotipo_agencia = models.ImageField(upload_to='logotipo_agencia/', blank=True, null=True)
+    logotipo_agencia = CloudinaryField('logotipo_agencia/', blank=True, null=True)
     data_cadastro=models.DateTimeField(auto_now=True)
 
     def __str__(self):
@@ -111,7 +111,7 @@ class Cliente(models.Model):
     numero_telefone = models.CharField(max_length=15, blank=True, null=True)
     nome_familiar = models.CharField(max_length=15, blank=True, null=True)
     contacto_familiar = models.IntegerField(blank=True, null=True)
-    foto_perfil = models.ImageField(upload_to='profile_images/', blank=True, null=True)
+    foto_perfil = CloudinaryField('profile_images/', blank=True, null=True)
     token=models.CharField(max_length=1000, blank=True, null=True)
     endereco = models.TextField(blank=True, null=True)
     activo=models.BooleanField(default=True)
@@ -149,7 +149,7 @@ class ClienteMetodoPagamento(models.Model):
 class Operador(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='operador')
     numero_telefone = models.CharField(max_length=15, blank=True, null=True)
-    foto_perfil = models.ImageField(upload_to='operdaor_images/', blank=True, null=True)
+    foto_perfil = CloudinaryField('operdaor_images/', blank=True, null=True)
     endereco = models.TextField(blank=True, null=True)
     token=models.CharField(max_length=1000, blank=True, null=True)
     activo=models.BooleanField(default=True)
@@ -194,7 +194,7 @@ class Empresa(models.Model):
     nuit = models.CharField(max_length=100, null=True, blank=True)
     numero_telefone = models.CharField(max_length=100, null=True, blank=True)
     slogan = models.CharField(max_length=500, null=True)
-    logotipo = models.ImageField(upload_to='logotipo-empresa/', blank=True, null=True)
+    logotipo = CloudinaryField('logotipo-empresa/', blank=True, null=True)
     sede = models.TextField(blank=True, null=True)
     activo=models.BooleanField(default=True)
     classificacao_media = models.DecimalField(max_digits=3, decimal_places=2, default=0.0)
@@ -260,7 +260,7 @@ class Agente(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='agente')
     empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE, related_name='empresa_agente')
     numero_telefone = models.IntegerField(blank=True, null=True)
-    foto_perfil = models.ImageField(upload_to='agente_images/', blank=True, null=True)
+    foto_perfil = CloudinaryField('agente_images/', blank=True, null=True)
     endereco = models.TextField(blank=True, null=True)
     token=models.CharField(max_length=1000, blank=True, null=True)
     activo=models.BooleanField(default=True)
@@ -539,7 +539,7 @@ class Bilhete(models.Model):
     
     duracao = models.CharField(max_length=500, blank=True, null=True)
     contacto_empresa = models.CharField(max_length=500, blank=True, null=True)
-    qrcode = models.ImageField(upload_to='bilhete_qr_code/', blank=True, null=True)
+    qrcode = CloudinaryField('bilhete_qr_code/', blank=True, null=True)
 
     data_criado = models.DateField(auto_now_add=True)
     hora_criado = models.TimeField(auto_now_add=True)
