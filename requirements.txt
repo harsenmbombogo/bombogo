@@ -50,6 +50,8 @@ idna==3.10
 kombu==5.4.2
 msgpack==1.1.0
 multidict==6.1.0
+mysql-connector-python==9.1.0
+mysqlclient==2.2.6
 packaging==24.2
 pillow==11.0.0
 prompt_toolkit==3.0.48
@@ -79,4 +81,5 @@ uritemplate==4.1.1
 urllib3==2.2.3
 vine==5.1.0
 wcwidth==0.2.13
+whitenoise==6.8.2
 yarl==1.18.3
