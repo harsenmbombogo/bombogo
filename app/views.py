@@ -1284,15 +1284,15 @@ class AgenteRotaViagemBilheteUpdateView(APIView):
             # Atualizando o status e realizando ações associadas
             match status_bilhete:
                 case 'Aprovado':
-                    print(ViagemAssento.objects.filter(viagem=bilhete.viagem, assento=bilhete.assento).count())
-                    assento = ViagemAssento.objects.get(viagem=bilhete.viagem, assento=bilhete.assento)
+                    
+                    assento = ViagemAssento.objects.filter(viagem=bilhete.viagem, assento=bilhete.assento).first()
                     assento.activo = True
                     assento.disponivel = False
                     assento.save()
                     sendMessage(bilhete.cliente.user.pk, "Reserva", "Seu pedido de reserva foi aprovado.", bilhete.pk)
                     
                 case 'Cancelado':
-                    assento = ViagemAssento.objects.get(viagem=bilhete.viagem, assento=bilhete.assento)
+                    assento = ViagemAssento.objects.filter(viagem=bilhete.viagem, assento=bilhete.assento).first()
                     assento.activo = False
                     assento.disponivel = True
                     assento.save()
