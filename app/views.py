@@ -311,6 +311,7 @@ class ClassificacaoEmpresaStatisticsView(APIView):
 
     def get(self, request, pk):
         empresa = Empresa.objects.get(pk=pk)
+        empresa.atualizar_classificacao_media()
         classificacoes = ClassificacaoViagem.objects.filter(viagem__rota__empresa=empresa)
 
         # Cálculo das estatísticas de avaliações
