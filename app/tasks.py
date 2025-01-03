@@ -78,19 +78,25 @@ def criar_novas_viagens(rotas, agente, data_atual):
 
 def Assentos(novas_viagens, mensagens):
     try:
-        viagens = Viagem.objects.bulk_create(novas_viagens)
+        # Cria as viagens em lote
+        viagens = Viagem.objects.bulk_create(novas_viagens, batch_size=30)
+        mensagens.append("Viagens criadas com sucesso.")
+        
+        # Busca novamente as viagens para garantir IDs consistentes
         novas_viagens_criadas = Viagem.objects.filter(
-            data_saida__in=[viagem.data_saida for viagem in viagens]  # Uso do __in para comparar com a lista de datas
+            empresa__in=[viagem.empresa for viagem in viagens],
+            agente__in=[viagem.agente for viagem in viagens],
+            data_saida__in=[viagem.data_saida for viagem in viagens]
         )
 
+        # Cria os assentos para cada viagem
         for viagem in novas_viagens_criadas:
             try:
-                
                 criar_assentos(viagem, viagem.rota.capacidade_assentos)
-                mensagens.append(f"Assentos criados para a viagem {viagem.id}")
+                mensagens.append(f"Assentos criados para a viagem {viagem.pk}.")
             except Exception as e:
-                mensagens.append(f"Erro ao criar assentos para a viagem {viagem.id}: {str(e)}")
-                logger.error(f"Erro ao criar assentos para a viagem {viagem.id}: {str(e)}")
+                mensagens.append(f"Erro ao criar assentos para a viagem {viagem.pk}: {str(e)}")
+                logger.error(f"Erro ao criar assentos para a viagem {viagem.pk}: {str(e)}")
     except Exception as e:
         mensagens.append(f"Erro ao criar viagens em lote: {str(e)}")
         logger.error(f"Erro ao criar viagens em lote: {str(e)}")
