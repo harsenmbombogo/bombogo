@@ -326,7 +326,7 @@ class ClassificacaoEmpresaStatisticsView(APIView):
         ) 
 
         # Total de avaliações
-        total_avaliacoes = estatisticas['media_rating'] or 0
+        total_avaliacoes = estatisticas['media_rating'] or 0.0
 
         # Cálculo das porcentagens de cada avaliação
         if total_avaliacoes > 0:
