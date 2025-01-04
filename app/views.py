@@ -1042,14 +1042,7 @@ class VenderBilheteListCreateView(generics.ListCreateAPIView):
         except ClienteMetodoPagamento.DoesNotExist:
             raise ValidationError("Método de pagamento não encontrado.")
 
-        # Verifica se já existe uma venda de bilhete para a viagem e o cliente
-        if VendaBilhete.objects.filter(viagem=viagem_id, data_venda__exact=viagem_id.data_saida ,cliente__user=request.user).exists():
-            raise ValidationError("Já existe um bilhete comprado para essa viagem.")
         
-        if comIdaVolta:
-            # Verifica se já existe uma venda de bilhete para a viagem e o cliente
-            if VendaBilhete.objects.filter(viagem=id_viagem_volta, data_venda__exact=id_viagem_volta.data_saida ,cliente__user=request.user).exists():
-                raise ValidationError("Já existe um bilhete comprado para essa viagem.")
 
         # Obtém o cliente baseado no usuário autenticado
         cliente = Cliente.objects.get(user=request.user)
