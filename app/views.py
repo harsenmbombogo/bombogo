@@ -570,40 +570,84 @@ class BilheteListCreateView(generics.ListCreateAPIView):
     def create(self, request, *args, **kwargs):
         # Obtém os dados da requisição
         
-        # serializer = self.get_serializer(data=request.data)
-        # serializer.is_valid(raise_exception=False)
-
         id = request.data.get('viagem')
         idvenda = request.data.get('venda')
         assento = request.data.get('assento')
+        com_ida_volta=request.data.get('com_ida_volta')
+        id_viagem_volta=request.data.get('id_viagem_volta')
+        cadeira_volta=request.data.get('cadeira_volta')
+        if com_ida_volta:
+            viagem_volta_id= Viagem.objects.get(pk=id_viagem_volta)
+
         venda=VendaBilhete.objects.get(pk=idvenda)
         viagem_id= Viagem.objects.get(pk=id)
 
 
         # Verifica se já existe um bilhete para a viagem e o cliente (baseado em algum dado relevante, como nome)
-        if Bilhete.objects.filter(viagem=viagem_id, assento=assento, status_bilhete='Aprovado').exists():
+        if Bilhete.objects.filter(viagem=viagem_id, assento=assento).exists():
             print("Já existe um bilhete comprado para essa viagem.")
             raise ValidationError("Já existe um bilhete comprado para essa viagem.")
+        
+        if com_ida_volta and Bilhete.objects.filter(viagem=viagem_volta_id, assento=cadeira_volta).exists():
+            print("Já existe um bilhete comprado para essa viagem.")
+            raise ValidationError("Já existe um bilhete comprado para essa viagem.")
+        
         try:
+            if com_ida_volta:
+                bilhete=Bilhete.objects.create(
+                    cliente=request.user.cliente,
+                    venda=venda,
+                    viagem=viagem_id,
+                    origem=viagem_id.rota.origem.nome,
+                    destino=viagem_id.rota.destino.nome,
+                    assento=assento,
+                    preco=viagem_id.rota.preco,
+                    nome_passageiro=request.data.get('nome_passageiro'),
+                    nome_familiar=request.data.get('nome_familiar'),
 
-            bilhete=Bilhete.objects.create(
-                cliente=request.user.cliente,
-                venda=venda,
-                viagem=viagem_id,
-                origem=request.data.get('origem'),
-                destino=request.data.get('destino'),
+                    contacto_passageiro=request.data.get('contacto_passageiro'),
+                    contacto_familiar=request.data.get('contacto_familiar'),
+                )
 
-                assento=request.data.get('assento'),
-                preco=request.data.get('preco'),
-                nome_passageiro=request.data.get('nome_passageiro'),
-                nome_familiar=request.data.get('nome_familiar'),
+                sendMessage(viagem_id.agente.user.pk, "Pedido de Reserva ", f"""Rota {viagem_id.rota.origem.nome} - {viagem_id.rota.destino.nome} ({viagem_id.data_saida})
+                """,bilhete.pk)
 
-                contacto_passageiro=request.data.get('contacto_passageiro'),
-                contacto_familiar=request.data.get('contacto_familiar'),
-            )
+                bilhete=Bilhete.objects.create(
+                    cliente=request.user.cliente,
+                    venda=venda,
+                    viagem=viagem_volta_id,
+                    origem=viagem_volta_id.rota.origem.nome,
+                    destino=viagem_volta_id.rota.destino.nome,
+                    assento=cadeira_volta,
+                    preco=viagem_volta_id.rota.preco,
+                    nome_passageiro=request.data.get('nome_passageiro'),
+                    nome_familiar=request.data.get('nome_familiar'),
+
+                    contacto_passageiro=request.data.get('contacto_passageiro'),
+                    contacto_familiar=request.data.get('contacto_familiar'),
+                )
+
+                sendMessage(viagem_volta_id.agente.user.pk, "Pedido de Reserva ", f"""Rota {viagem_volta_id.rota.origem.nome} - {viagem_volta_id.rota.destino.nome} ({viagem_volta_id.data_saida})
+                """,bilhete.pk)
+            else:
+
+                bilhete=Bilhete.objects.create(
+                    cliente=request.user.cliente,
+                    venda=venda,
+                    viagem=viagem_id,
+                    origem=viagem_id.rota.origem.nome,
+                    destino=viagem_id.rota.destino.nome,
+                    assento=assento,
+                    preco=viagem_id.rota.preco,
+                    nome_passageiro=request.data.get('nome_passageiro'),
+                    nome_familiar=request.data.get('nome_familiar'),
+
+                    contacto_passageiro=request.data.get('contacto_passageiro'),
+                    contacto_familiar=request.data.get('contacto_familiar'),
+                )
             
-            sendMessage(viagem_id.agente.user.pk, "Pedido de Reserva ", f"""Rota {viagem_id.rota.origem.nome} - {viagem_id.rota.destino.nome} ({viagem_id.data_saida})
-            """,1)
+                sendMessage(viagem_id.agente.user.pk, "Pedido de Reserva ", f"""Rota {viagem_id.rota.origem.nome} - {viagem_id.rota.destino.nome} ({viagem_id.data_saida})
+                """,bilhete.pk)
 
             return Response({'message': 'Criado com sucesso.'}, status=status.HTTP_201_CREATED)
         except Exception as e:
@@ -973,6 +1017,10 @@ class VenderBilheteListCreateView(generics.ListCreateAPIView):
     def create(self, request, *args, **kwargs):
         # Obtém os dados da requisição
         id_viagem = request.data.get('id_viagem')
+        comIdaVolta = request.data.get('com_ida_volta')
+        if comIdaVolta:
+            id_viagem_volta = request.data.get('id_viagem_volta')
+            
         id_metodopagamento = request.data.get('id_metodopagamanto')
         preco_bilhete = request.data.get('preco_total')
         desconto_bilhete = request.data.get('desconto')
@@ -983,6 +1031,8 @@ class VenderBilheteListCreateView(generics.ListCreateAPIView):
         try:
             # Obtém a viagem com base no ID fornecido
             viagem_id = Viagem.objects.get(pk=id_viagem)
+            if comIdaVolta:
+                id_viagem_volta= Viagem.objects.get(pk=id_viagem_volta)
         except Viagem.DoesNotExist:
             raise ValidationError("Viagem não encontrada.")
 
@@ -993,24 +1043,42 @@ class VenderBilheteListCreateView(generics.ListCreateAPIView):
             raise ValidationError("Método de pagamento não encontrado.")
 
         # Verifica se já existe uma venda de bilhete para a viagem e o cliente
-        if VendaBilhete.objects.filter(viagem=viagem_id, data_venda__iexact=viagem_id.data_saida ,cliente__user=request.user).exists():
+        if VendaBilhete.objects.filter(viagem=viagem_id, data_venda__exact=viagem_id.data_saida ,cliente__user=request.user).exists():
             raise ValidationError("Já existe um bilhete comprado para essa viagem.")
+        
+        if comIdaVolta:
+            # Verifica se já existe uma venda de bilhete para a viagem e o cliente
+            if VendaBilhete.objects.filter(viagem=id_viagem_volta, data_venda__exact=id_viagem_volta.data_saida ,cliente__user=request.user).exists():
+                raise ValidationError("Já existe um bilhete comprado para essa viagem.")
 
         # Obtém o cliente baseado no usuário autenticado
         cliente = Cliente.objects.get(user=request.user)
 
         # Cria a venda do bilhete
-        venda_bilhete = VendaBilhete(
-            cliente=cliente,
-            viagem=viagem_id,
-            metodo_pagamento=metodo_pagamento,
-            preco_total=preco_bilhete,
-            desconto=desconto_bilhete,
-            subtotal=subtotal_bilhete,
-            total_pago=total_pago_bilhete,
-            quantidade=quantidade_bilhete,
-        )
-        venda_bilhete.save()
+        if comIdaVolta:
+            venda_bilhete = VendaBilhete.objects.create(
+                cliente=cliente,
+                viagem=viagem_id,
+                metodo_pagamento=metodo_pagamento,
+                preco_total=preco_bilhete,
+                desconto=desconto_bilhete,
+                subtotal=subtotal_bilhete,
+                total_pago=total_pago_bilhete,
+                quantidade=quantidade_bilhete,
+                viagem_volta=id_viagem_volta
+            )
+        else:
+            venda_bilhete = VendaBilhete.objects.create(
+                cliente=cliente,
+                viagem=viagem_id,
+                metodo_pagamento=metodo_pagamento,
+                preco_total=preco_bilhete,
+                desconto=desconto_bilhete,
+                subtotal=subtotal_bilhete,
+                total_pago=total_pago_bilhete,
+                quantidade=quantidade_bilhete,
+            )
+        
 
         # Retorna o ID da venda criada
         serializer = VendaBilheteSerializer(venda_bilhete)

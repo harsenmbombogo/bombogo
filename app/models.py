@@ -479,7 +479,8 @@ class VendaBilhete(models.Model):
     # Relacionamento com o modelo Empresa
     empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE, related_name='venda_bilhete_emoresa', blank=True, null=True)
     # Relacionamento com o modelo Viagem
-    viagem = models.ForeignKey(Viagem, on_delete=models.CASCADE, related_name='venda_bilhete_viagem', blank=True, null=True)
+    viagem = models.ForeignKey(Viagem, on_delete=models.CASCADE, related_name='venda_bilhete_viagem', null=True)
+    viagem_volta = models.ForeignKey(Viagem, on_delete=models.CASCADE, related_name='venda_bilhete_viagem_volta', blank=True, null=True)
     metodo_pagamento = models.ForeignKey(ClienteMetodoPagamento, on_delete=models.CASCADE, related_name='venda_bilhete_metodo_pagamento', blank=True, null=True)
     
     preco_total= models.DecimalField(decimal_places=2, max_digits=10)
@@ -505,12 +506,6 @@ class VendaBilhete(models.Model):
     class Meta:
         ordering=['-pk']
 
-
-
-from io import BytesIO
-from django.core.files.base import ContentFile
-import qrcode
-import cloudinary.uploader
 
 class Bilhete(models.Model):
     STATUS_CHOICES = [
