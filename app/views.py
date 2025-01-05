@@ -54,7 +54,7 @@ def sendMessage(id, title, body, bilhete):
                     body=body
                 ),
                 data={
-                    'bilhete_id': str(bilhete),  # Inclua o ID do pedido nos dados
+                    'pk': str(bilhete),  # Inclua o ID do pedido nos dados
                 }
             ),
             # this is optional
@@ -610,7 +610,7 @@ class BilheteListCreateView(generics.ListCreateAPIView):
                 )
 
                 sendMessage(viagem_id.agente.user.pk, "Pedido de Reserva ", f"""Rota {viagem_id.rota.origem.nome} - {viagem_id.rota.destino.nome} ({viagem_id.data_saida})
-                """,bilhete.pk)
+                """,viagem_id.pk)
 
                 bilhete=Bilhete.objects.create(
                     cliente=request.user.cliente,
@@ -628,7 +628,7 @@ class BilheteListCreateView(generics.ListCreateAPIView):
                 )
 
                 sendMessage(viagem_volta_id.agente.user.pk, "Pedido de Reserva ", f"""Rota {viagem_volta_id.rota.origem.nome} - {viagem_volta_id.rota.destino.nome} ({viagem_volta_id.data_saida})
-                """,bilhete.pk)
+                """,viagem_volta_id.pk)
             else:
 
                 bilhete=Bilhete.objects.create(
@@ -647,7 +647,7 @@ class BilheteListCreateView(generics.ListCreateAPIView):
                 )
             
                 sendMessage(viagem_id.agente.user.pk, "Pedido de Reserva ", f"""Rota {viagem_id.rota.origem.nome} - {viagem_id.rota.destino.nome} ({viagem_id.data_saida})
-                """,bilhete.pk)
+                """,viagem_id.pk)
 
             return Response({'message': 'Criado com sucesso.'}, status=status.HTTP_201_CREATED)
         except Exception as e:
@@ -1354,14 +1354,14 @@ class AgenteRotaViagemBilheteUpdateView(APIView):
                     assento.activo = True
                     assento.disponivel = False
                     assento.save()
-                    sendMessage(bilhete.cliente.user.pk, "Reserva", "Seu pedido de reserva foi aprovado.", bilhete.pk)
+                    sendMessage(bilhete.cliente.user.pk, "Reserva", "Seu pedido de reserva foi aprovado.", bilhete.viagem.pk)
                     
                 case 'Cancelado':
                     assento = ViagemAssento.objects.filter(viagem=bilhete.viagem, assento=bilhete.assento).first()
                     assento.activo = False
                     assento.disponivel = True
                     assento.save()
-                    sendMessage(bilhete.cliente.user.pk, "Reserva", "Seu pedido de reserva foi cancelado.", bilhete.pk)
+                    sendMessage(bilhete.cliente.user.pk, "Reserva", "Seu pedido de reserva foi cancelado.", bilhete.viagem.pk)
 
             # Salvar as alterações no modelo Bilhete
             bilhete.save()  # Isso salvará o modelo, incluindo qualquer campo de mídia automaticamente
